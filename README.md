@@ -34,9 +34,10 @@ Run the program with:
 ```bash
 python3 main.py
 
+```
 
 
-Project Structure
+## Project Structure
 ascii_art/
 ├── main.py
 ├── standard.txt
@@ -44,7 +45,7 @@ ascii_art/
 ├── thinkertoy.txt
 └── README.md
 
-What I Learned
+## What I Learned
 
 Through this project I practiced:
 
