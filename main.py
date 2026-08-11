@@ -39,7 +39,7 @@ def print_ascii_art(to_print,file):
         for char in to_print:
             if char in file:
                 line += file[char][i] + " "
-            result += line + "\n"
+        result += line + "\n"
     return result
 
 def which_font(f= "standard"):
@@ -70,8 +70,8 @@ if for_output=="":
     else:
         print(print_ascii_art(to_print,file))
 else :
-    with open(for_output,"w"):
-        for_output.write(print_ascii_art(to_print,file))
+    with open(for_output,"w") as f:
+        f.write(print_ascii_art(to_print,file))
     print("File " + for_output + " was created")
 
 
