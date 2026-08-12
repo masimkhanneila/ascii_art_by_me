@@ -1,16 +1,44 @@
 import sys
 import argparse
 
-parser = argparse.ArgumentParser()
+for_output = None
+color = None
+align = None
+reverse = None
+text_font = []
+font = "standard"
+to_print = ""
+for arg in sys.argv[1:]:
 
-parser.add_argument("--output", help="Output file")
-parser.add_argument("--color", choices=["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "orange", "pink", "purple", "light_blue"], help="Color of the ASCII art")
-parser.add_argument("letters", nargs="?", help="Letters to convert to color")
-parser.add_argument("--align", choices=["left", "center", "right"], default="left", help="Alignment of the ASCII art")
-parser.add_argument("--reverse", action="store_true", help="Reverse the order of the ASCII art")
-parser.add_argument("text", help="Text to convert to ASCII art")
-parser.add_argument("font",nargs="?",choices=["standard", "shadow", "thinkertoy"],default="standard")
-args = parser.parse_args()
+    if arg.startswith("--output="):
+        for_output = arg.split("=", 1)[1]
+
+    elif arg.startswith("--color="):
+        color = arg.split("=", 1)[1]
+
+    elif arg.startswith("--align="):
+        align = arg.split("=", 1)[1]
+    elif arg.startswith("--reverse="):
+        reverse = arg.split("=", 1)[1]
+    else:
+        text_font.append(arg)
+
+if len(text_font) == 1:
+    to_print = text_font[0]
+    font = "standard"
+    letters = None
+if len(text_font) == 2 and text_font[1].lower() in ["standard", "shadow", "thinkertoy"]:
+    to_print = text_font[0]
+    font = text_font[1]
+    letters = None
+if len(text_font) == 2 and text_font[1].lower() not in ["standard", "shadow", "thinkertoy"]:
+    to_print = text_font[0]
+    letters = text_font[1]
+    font = "standard"
+if len(text_font) == 3 :
+    to_print = text_font[0]
+    letters = text_font[1]
+    font = text_font[2]
 
 colors = {
     "black": "\033[30m",
@@ -27,7 +55,6 @@ colors = {
     "light_blue": "\033[38;5;117m",
     "reset": "\033[0m"
 }
-
 def read_make_dict(file):
     with open(file, "r") as f:
         f.readline()
@@ -36,10 +63,7 @@ def read_make_dict(file):
             f.readline().rstrip("\n")
             for i in range(8) 
             ]
-        d = {
-            " " : value
-        }
- 
+        d = {" " : value}
         for k in range(33, 127):
             value = [ 
                 f.readline().rstrip("\n")
@@ -48,7 +72,6 @@ def read_make_dict(file):
             d[chr(k)] = value
             f.readline()
         k += 1
-
     return d
 standarD= read_make_dict("standard.txt")
 shadoW= read_make_dict("shadow.txt")
@@ -65,7 +88,9 @@ def print_ascii_art(to_print,file):
         line = ""
         for char in to_print:
             if char in file:
-                line += file[char][i] + " "
+                c = file[char][i]
+                line += c + " "
+        line = align_text(line, align)
         result += line + "\n"
     return result
 
@@ -78,41 +103,26 @@ def which_font(f= "standard"):
         return standarD
 
 
-to_print = args.text
-font = args.font
-for_output = args.output
-color = args.color
-letters = args.letters
-align = args.align
-reverse = args.reverse
-
-print(for_output, color, letters, align, reverse, to_print, font)
+def align_text(text, align):
+    if align is None:
+        return text
+    if align.lower() == "left":
+        return text.ljust(100)
+    elif align.lower() == "right":
+        return text.rjust(100)
+    elif align.lower() == "center":
+        return text.center(100)
+    else:
+        return "Please choose a valid alignment."
 
 file = which_font(font)
 
-if for_output==None:
-    if "\\n" in to_print:
-        words = to_print.split("\\n")
-        for word in words:
-            to_print = word
-            print(print_ascii_art(to_print,file))
-            print("\n")
-    else:
-        print(print_ascii_art(to_print,file))
-else :
-    with open(for_output,"w") as f:
-        f.write(print_ascii_art(to_print,file))
+result = print_ascii_art(to_print, file)
+
+if for_output is None:
+    print(result)
+else:
+    with open(for_output, "w") as f:
+        f.write(result)
     print("File " + for_output + " was created")
-
-
-
-    
-
-
-
-
-
-
-
-
 
