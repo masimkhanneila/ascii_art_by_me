@@ -89,6 +89,9 @@ def print_ascii_art(to_print,file):
         for char in to_print:
             if char in file:
                 c = file[char][i]
+                if color is not None:
+                    if letters is None or char in letters:
+                        c = colorize(c, color)
                 line += c + " "
         line = align_text(line, align)
         result += line + "\n"
@@ -102,6 +105,8 @@ def which_font(f= "standard"):
     else :
         return standarD
 
+def colorize(text, color):
+    return colors[color] + text + colors["reset"]
 
 def align_text(text, align):
     if align is None:
@@ -118,32 +123,60 @@ def align_text(text, align):
 def reverse_text(reverse):
     with open(reverse, "r") as f:
         lines = [line.rstrip("\n") for line in f]
-
     result = ""
-    position = 0
-
-    while position < len(lines[0]):
-
+    index = 0
+    while index < len(lines[0]):
         found = False
-
         for key, value in standarD.items():
             width = len(value[0])
-
             block = []
-
             for line in lines[:8]:
-                block.append(line[position:position + width])
-
+                block.append(line[index:index + width])
             if block == value:
                 result += key
-                position += width + 1
+                index += width + 1
                 found = True
                 break
-
         if not found:
-            position += 1
-
+            index += 1
     return result
+
+if color is not None:
+    if len(text_font) == 2:
+        letters = text_font[0]
+        to_print = text_font[1]
+        font = "standard"
+    elif len(text_font) == 3:
+        letters = text_font[0]
+        to_print = text_font[1]
+        font = text_font[2]
+
+    elif len(text_font) == 1:
+        letters = None
+        to_print = text_font[0]
+        font = "standard"
+
+else:
+    if len(text_font) == 1:
+        to_print = text_font[0]
+        font = "standard"
+        letters = None
+
+    elif len(text_font) == 2 and text_font[1].lower() in ["standard", "shadow", "thinkertoy"]:
+        to_print = text_font[0]
+        font = text_font[1]
+        letters = None
+
+    elif len(text_font) == 2:
+        to_print = text_font[0]
+        letters = text_font[1]
+        font = "standard"
+
+    elif len(text_font) == 3:
+        to_print = text_font[0]
+        letters = text_font[1]
+        font = text_font[2]
+
 
 file = which_font(font)
 result = print_ascii_art(to_print, file)
