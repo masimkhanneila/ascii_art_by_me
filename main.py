@@ -115,8 +115,37 @@ def align_text(text, align):
     else:
         return "Please choose a valid alignment."
 
-file = which_font(font)
+def reverse_text(reverse):
+    with open(reverse, "r") as f:
+        lines = [line.rstrip("\n") for line in f]
 
+    result = ""
+    position = 0
+
+    while position < len(lines[0]):
+
+        found = False
+
+        for key, value in standarD.items():
+            width = len(value[0])
+
+            block = []
+
+            for line in lines[:8]:
+                block.append(line[position:position + width])
+
+            if block == value:
+                result += key
+                position += width + 1
+                found = True
+                break
+
+        if not found:
+            position += 1
+
+    return result
+
+file = which_font(font)
 result = print_ascii_art(to_print, file)
 
 if for_output is None:
@@ -125,4 +154,6 @@ else:
     with open(for_output, "w") as f:
         f.write(result)
     print("File " + for_output + " was created")
+if reverse is not None:
+    print(reverse_text(reverse))
 
